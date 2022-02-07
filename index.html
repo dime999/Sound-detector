@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+
+    <title>Sound detection</title>
+  </head>
+  <body>
+    <div class="wrapper">
+      <nav class="navbar navbar-expand-lg navbar-dark px-5 bg-warning py-3">
+        <a class="navbar-brand text-dark h2 m-0" href="#" id="title-text"
+          >Sound detector</a
+        >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </nav>
+
+      <div class="p-5 rounded bg-warning w-25 mx-auto mt-5 text-center shadow">
+        <div>
+          <input
+            type="button"
+            value="Change mode"
+            id="mode"
+            class="btn btn-light shadow"
+          />
+          <div class="">
+            <small class="text-secondary"> Tap to change </small>
+          </div>
+        </div>
+        <div class="my-4">
+          <div class="">Current mode:</div>
+          <div id="text" class="h2"></div>
+        </div>
+        <input
+          type="button"
+          value="ON"
+          id="on"
+          class="btn btn-outline-success shadow py-2 px-5"
+        />
+        <input
+          type="button"
+          value="OFF"
+          id="off"
+          class="btn btn-outline-danger shadow py-2 px-5"
+        />
+      </div>
+    </div>
+
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.3/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        onValue,
+        set,
+        get,
+        child,
+      } from "https://www.gstatic.com/firebasejs/9.6.3/firebase-database.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyAxLDu1YTUjVMClBg-LXYJamR4JsFBTpDs",
+        authDomain: "sound-bbcb8.firebaseapp.com",
+        databaseURL:
+          "https://sound-bbcb8-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "sound-bbcb8",
+        storageBucket: "sound-bbcb8.appspot.com",
+        messagingSenderId: "655662656762",
+        appId: "1:655662656762:web:be4090feabda9189e52d43",
+      };
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+
+      let mode;
+
+      let on = document.getElementById("on");
+      let off = document.getElementById("off");
+      let text = document.getElementById("text");
+      let modeEl = document.getElementById("mode");
+      let wrapper = document.getElementsByClassName("wrapper")[0];
+
+      const m = ref(db, "sensormode");
+      onValue(m, (snapshot) => {
+        const data = snapshot.val();
+        mode = data;
+        console.log("testiranje");
+        text.innerHTML = data ? "Light" : "Alarm";
+        wrapper.style.backgroundImage = data
+          ? "url('1472771.jpg')"
+          : "url('burglar-crime-men-thief-1920x1080-105985.jpg')";
+      });
+
+      on.addEventListener("click", () => {
+        set(ref(db, "alarmon"), true);
+      });
+
+      off.addEventListener("click", () => {
+        set(ref(db, "alarmon"), false);
+      });
+
+      modeEl.addEventListener("click", () => {
+        if (mode != undefined) {
+          if (mode) {
+            set(ref(db, "alarmon"), false);
+          }
+          set(ref(db, "sensormode"), !mode);
+        }
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  html,
+  body {
+    height: 100%;
+  }
+  .wrapper {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 100%;
+  }
+</style>
